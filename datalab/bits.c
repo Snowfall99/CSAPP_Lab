@@ -200,7 +200,7 @@ int negate(int x) {
  *   Rating: 3
  */
 int isAsciiDigit(int x) {
-  return 2;
+  return !(x>>3 ^ 0x6) | (!(x>>3 ^ 0x7) & !(x & 0x6));
 }
 /* 
  * conditional - same as x ? y : z 
@@ -251,7 +251,22 @@ int logicalNeg(int x) {
  *  Rating: 4
  */
 int howManyBits(int x) {
-  return 0;
+  int b16, b8, b4, b2, b1, b0;
+  int sign = x>>31;
+  x = (sign&~x)|(~sign&x);
+
+  b16 = !!(x>>16)<<4;
+  x = x>>b16;
+  b8 = !!(x>>8)<<3;
+  x = x>>b8;
+  b4 = !!(x>>4)<<2;
+  x = x>>b4;
+  b2 = !!(x>>2)<<1;
+  x = x>>b2;
+  b1 = !!(x>>1);
+  x = x>>b1;
+  b0 = x;
+  return b16 + b8 + b4 + b2 + b1 +b0 +1;
 }
 //float
 /* 
@@ -294,9 +309,28 @@ unsigned floatScale2(unsigned uf) {
  *   Rating: 4
  */
 int floatFloat2Int(unsigned uf) {
-  unsigned mask = 0x7f800000;
-  unsigned exp = (uf & mask) >> 23;
-  return 2;
+  int sign = uf>>31;
+  int exp = ((uf&0x7f800000)>>23)-127;
+  // complements shadowed 1 ahead of number
+  int frac = (uf&0x007fffff)|0x00800000;
+  // ignore sign and judge 0
+  if(!(uf&0x7fffffff)) return 0;
+
+  // overflow
+  if(exp > 31) return 0x80000000;
+  // decimal cast to 0
+  if(exp < 0) return 0;
+  // 23 is the number of frac bits 32 - 9 = 23
+  // we need to complement 0
+  if(exp > 23) frac <<= (exp - 23);
+  else frac >>= (23 - exp);
+
+  // check whether overflow
+  if(!((frac >> 31) ^ sign)) return frac; // sign is same with before
+  // sign is 1 and sign is different from before, overflow
+  else if(frac >> 31) return 0x80000000; 
+  // sign is different from before and now is positive, get the minus
+  else return ~frac + 1;
 }
 /* 
  * floatPower2 - Return bit-level equivalent of the expression 2.0^x
@@ -312,12 +346,8 @@ int floatFloat2Int(unsigned uf) {
  *   Rating: 4
  */
 unsigned floatPower2(int x) {
-  int exp = 0x7f + x;
-  if (exp >= 255) {
-      return 0x7f800000;
-  } else if (exp < 0) {
-      return 0x0;
-  } else {
-      return exp << 23;
-  }
+  int exp = x + 127;
+  if (exp <= 0) return 0x0;
+  if (exp >= 255) return 0x7f800000;
+  return exp << 23;
 }

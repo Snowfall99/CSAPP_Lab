@@ -1,7 +1,7 @@
 # CSAPP_Lab
 To see whether I can finish csapp labs this month.
 # Status
-- [ ] Data Lab
+- [x] Data Lab
 - [ ] Bomb Lab
 - [ ] Attack Lab
 - [ ] Arch Lab

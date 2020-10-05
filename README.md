@@ -2,7 +2,7 @@
 To see whether I can finish csapp labs this month.
 # Status
 - [x] Data Lab
-- [ ] Bomb Lab
+- [x] Bomb Lab
 - [ ] Attack Lab
 - [ ] Arch Lab
 - [ ] Cache Lab

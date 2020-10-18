@@ -3,9 +3,9 @@ To see whether I can finish csapp labs this month.
 # Status
 - [x] Data Lab
 - [x] Bomb Lab
-- [ ] Attack Lab
+- [x] Attack Lab
 - [ ] Arch Lab
-- [ ] Cache Lab
-- [ ] Shell Lab
+- [x] Cache Lab
+- [x] Shell Lab
 - [ ] Malloc Lab
-- [ ] Proxy Lab
+- [x] Proxy Lab
